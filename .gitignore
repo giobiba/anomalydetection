@@ -4,3 +4,5 @@
 __pycache
 dist
 dist/*
+setup.cfg
+pyproject.toml

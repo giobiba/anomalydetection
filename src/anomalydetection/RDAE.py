@@ -5,7 +5,24 @@ from DeepAE import DAE
 
 
 class RDAE:
-
+    """
+        Parameters
+        ----------
+        lambda_:
+            penalty for the sparsity error
+        mu_:
+            initial lagrangian penalty
+        max_iter:
+            maximum number of iterations
+        rho_:
+            learning rate
+        tau_:
+            mu update criterion parameter
+        REL_TOL:
+            relative tolerence
+        ABS_TOL:
+            absolute tolerance
+    """
     def __init__(self, encoder_neurons=None, decoder_neurons=None, lambda_=1.0, error=1.0e-7,
                  activation_function='tanh', regularizer='l2', regularizer_penalty=0.1, dropout=0.2, shrink='l1shrink',
                  verbose=False, max_iter=100):
@@ -20,7 +37,7 @@ class RDAE:
         self.dropout = dropout
         self.error = error
         self.max_iter = max_iter
-        self.AE = DAE(encoder_neurons=self.encoder_neurons, decoder_neurons=self.decoder_neurons,
+        self.AE = DAE(encoder_layer_size=self.encoder_neurons, decoder_layer_size=self.decoder_neurons,
                       activation_function=self.activation_function, regularizer=self.regularizer, regularizer_penalty=self.regularizer_penalty,
                       dropout=self.dropout)
         if shrink == 'l1shrink':
