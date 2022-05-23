@@ -1,0 +1,6 @@
+.ipynb_checkpoints
+.git
+.idea
+__pycache
+dist
+dist/*
