@@ -8,29 +8,37 @@ class RDAE:
     """
         Parameters
         ----------
+        history:
+            list of history objects given by the autoencoder while fitting
         lambda_:
             penalty for the sparsity error
-        mu_:
-            initial lagrangian penalty
+        encoder_layer_size:
+            list of layer sizes for the encoder
+        decoder_layer_size:
+            list of layer sizes for the decoder
+        activation_function:
+            activation function used for each layer
+        regularizer:
+            activity_regularizer for layers
+        regularizer_penalty:
+            penalty for the regularizer
+        dropout:
+            percentage of neurons dropped
+        shrink:
+            shrink function applied for S (l1shrink or l21shrink)
+        verbose:
+            boolean for verbose printing
         max_iter:
             maximum number of iterations
-        rho_:
-            learning rate
-        tau_:
-            mu update criterion parameter
-        REL_TOL:
-            relative tolerence
-        ABS_TOL:
-            absolute tolerance
     """
-    def __init__(self, encoder_neurons=None, decoder_neurons=None, lambda_=1.0, error=1.0e-7,
+    def __init__(self, encoder_layer_size=None, decoder_layer_size=None, lambda_=1.0, error=1.0e-7,
                  activation_function='tanh', regularizer='l2', regularizer_penalty=0.1, dropout=0.2, shrink='l1shrink',
                  verbose=False, max_iter=100):
 
         self.history = []
         self.lambda_ = lambda_
-        self.encoder_neurons = encoder_neurons
-        self.decoder_neurons = decoder_neurons
+        self.encoder_neurons = encoder_layer_size
+        self.decoder_neurons = decoder_layer_size
         self.activation_function = activation_function
         self.regularizer = regularizer
         self.regularizer_penalty = regularizer_penalty
