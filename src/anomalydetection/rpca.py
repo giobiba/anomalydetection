@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.base import BaseEstimator
-from utils.utils import fnorm, l2norm, nuclear_prox, l1shrink
+from .utils.utils import fnorm, l2norm, nuclear_prox, l1shrink
 
 class rpca(BaseEstimator):
     """
@@ -46,9 +46,9 @@ class rpca(BaseEstimator):
         return primal_residual, dual_residual
 
     def _update_tols(self, x, S, L, Y):
-        tol_primal = self.REL_TOL * max(l2norm(x), l2norm(S), l2norm(L))
-        tol_dual = self.REL_TOL * l2norm(Y)
-        return tol_primal, tol_dual
+        primal_tol = self.REL_TOL * max(l2norm(x), l2norm(S), l2norm(L))
+        dual_tol = self.REL_TOL * l2norm(Y)
+        return primal_tol, dual_tol
 
     def _J(self, x, mu):
         return max(np.linalg.norm(x), np.max(np.abs(x)) / mu)
@@ -79,6 +79,9 @@ class rpca(BaseEstimator):
             'mu': []
         }
 
+        if self.verbose:
+            print(f"Lambda: {self.lambda_}; mu: {self.mu_}")
+
         for i in range(self.max_iter):
             if self.verbose:
                 print(f"Iteration: {i}; Current mu: {self.mu_}")
@@ -93,13 +96,14 @@ class rpca(BaseEstimator):
             Y += (xt - S - L)*self.mu_
 
             primal, dual = self._calculate_residuals(xt, S, L, S_old)
-            primal_tol, dual_tol = self._update_tols(xt, S, L, Y) # 0d
+            primal_tol, dual_tol = self._update_tols(xt, S, L, Y)
 
             eps_primal = np.sqrt(xt.size) * self.ABS_TOL + primal_tol
-            eps_dual = np.sqrt(xt.size) * self.ABS_TOL + dual_tol # 1d
+            eps_dual = np.sqrt(xt.size) * self.ABS_TOL + dual_tol
 
             if self.verbose:
-                print(f"Primal: {primal_tol}, Dual: {dual_tol}")
+                print(f"Primal: {primal}, Dual: {dual}")
+                print(f"Primal tol: {primal_tol}, Dual tol: {dual_tol}")
                 print(f"Eps Primal: {eps_primal}, Eps Dual: {eps_dual}")
 
             # add the stats
@@ -110,8 +114,12 @@ class rpca(BaseEstimator):
             self.STATS['mu'].append(self.mu_)
 
             # check for stopping criterion
+
             if primal < eps_primal and dual < eps_dual:
                 break
+
+            #if primal <= primal_tol and dual <= dual_tol:
+            #    break
 
             # update mu_
             if primal > self.tau_ * dual:
@@ -134,5 +142,3 @@ class rpca(BaseEstimator):
         self.STATS['cost'] = self.__cost(L, S)
 
         return L, S
-
-
